@@ -22,7 +22,7 @@ import asyncio
 # Triggered from a message on a Cloud Pub/Sub topic.
 @functions_framework.cloud_event
 def subscribe(cloud_event):
-    from datetime import datetime
+    from datetime import datetime, timedelta
 
     project_name = "verdant-wave-375715"
     gcs_bucket_name = "summoner_checklist"
@@ -38,7 +38,8 @@ def subscribe(cloud_event):
     to_use_puuids = puuids.split()[1:num_puuids + 1]
     my_start_ts = run_scheduled - timedelta(hours=time_window_hours) - timedelta(hours=time_offset_hours)
     my_end_ts = run_scheduled - timedelta(hours=time_offset_hours)
-    my_matches = asyncio.run(get_summoner_matches(my_puuid, my_start_ts, my_end_ts, my_topic_name))
+    my_output_topic_name = "projects/{}/topics/{}".format(project_name, pubsub_topic_output)
+    my_matches = asyncio.run(get_summoner_matches(to_use_puuids, my_start_ts, my_end_ts, my_output_topic_name))
     print(my_matches)
 
     # print("Hello, " + base64.b64decode(cloud_event.data["message"]["data"]).decode() + "!")
