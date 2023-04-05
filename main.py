@@ -16,7 +16,7 @@
 import base64
 
 import functions_framework
-from getdata.tasks import get_summoner_matches
+from get_data.tasks import get_summoner_matches
 import asyncio
 
 # Triggered from a message on a Cloud Pub/Sub topic.
