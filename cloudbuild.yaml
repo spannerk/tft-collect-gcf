@@ -10,3 +10,4 @@ steps:
   - --entry-point=subscribe
   - --set-secrets=RIOT_API_KEY=RIOT_API_KEY:latest
   - --trigger-topic=twice-per-day
+  - --runtime=python311
