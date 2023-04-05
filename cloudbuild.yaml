@@ -8,5 +8,5 @@ steps:
   - --region=us-central1
   - --source=.
   - --entry-point=subscribe
-  - --set-secrets='RIOT_API_KEY=RIOT_API_KEY:latest'
+  - --set-secrets=RIOT_API_KEY=RIOT_API_KEY:latest
   - --trigger-topic=twice-per-day
