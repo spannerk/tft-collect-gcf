@@ -16,11 +16,30 @@
 import base64
 
 import functions_framework
-
+from getdata.tasks import get_summoner_matches
+import asyncio
 
 # Triggered from a message on a Cloud Pub/Sub topic.
 @functions_framework.cloud_event
 def subscribe(cloud_event):
-    # Print out the data from Pub/Sub, to prove that it worked
-    print("Hello, " + base64.b64decode(cloud_event.data["message"]["data"]).decode() + "!")
+    from datetime import datetime
+
+    project_name = "verdant-wave-375715"
+    gcs_bucket_name = "summoner_checklist"
+    gcs_file_name = "summoner_list.csv"
+    pubsub_topic_input = "twice-per-day"
+    pubsub_topic_output = "player-matches"
+    time_window_hours = 12
+    time_offset_hours = 1
+    run_scheduled = datetime(2023, 4, 3, 0, 0, 0)
+    num_puuids = 3
+
+    puuids = gcs_read(gcs_bucket_name, gcs_file_name)
+    to_use_puuids = puuids.split()[1:num_puuids + 1]
+    my_start_ts = run_scheduled - timedelta(hours=time_window_hours) - timedelta(hours=time_offset_hours)
+    my_end_ts = run_scheduled - timedelta(hours=time_offset_hours)
+    my_matches = asyncio.run(get_summoner_matches(my_puuid, my_start_ts, my_end_ts, my_topic_name))
+    print(my_matches)
+
+    # print("Hello, " + base64.b64decode(cloud_event.data["message"]["data"]).decode() + "!")
 # [END functions_cloudevent_pubsub]
