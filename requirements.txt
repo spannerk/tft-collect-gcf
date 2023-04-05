@@ -1,3 +1,4 @@
 functions-framework==3.2.0
 google-cloud-pubsub==2.15.0
+google-cloud-storage==2.8.0
 pyot==6.0.8
