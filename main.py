@@ -16,31 +16,28 @@
 import base64
 
 import functions_framework
-from get_data.tasks import get_summoner_matches, gcs_read
+from get_data.tasks import process_run, gcs_write
 import asyncio
+from datetime import datetime
 
 # Triggered from a message on a Cloud Pub/Sub topic.
 @functions_framework.cloud_event
-def subscribe(cloud_event):
-    from datetime import datetime, timedelta
+def read_event(cloud_event):
 
-    project_name = "verdant-wave-375715"
-    gcs_bucket_name = "summoner_checklist"
-    gcs_file_name = "summoner_list.csv"
-    pubsub_topic_input = "twice-per-day"
-    pubsub_topic_output = "player-matches"
-    time_window_hours = 12
-    time_offset_hours = 1
-    run_scheduled = datetime(2023, 4, 3, 0, 0, 0)
-    num_puuids = 3
+    configs = {
+        'project_name': 'verdant-wave-375715',
+        'input_bucket_name': "summoner_checklist",
+        'input_blob_name': "summoner_list.csv",
+        'summoner_output_func': gcs_write,
+        'summoner_output_location': 'tft-summoners',
+        'match_output_func': gcs_write,
+        'match_output_location': 'tft-player-matches',
+        'num_puuids':None,
+        'time_window_hours': 12,
+        'time_offset_hours': 1
+    }
 
-    puuids = gcs_read(gcs_bucket_name, gcs_file_name)
-    to_use_puuids = puuids.split()[1:num_puuids + 1]
-    my_start_ts = run_scheduled - timedelta(hours=time_window_hours) - timedelta(hours=time_offset_hours)
-    my_end_ts = run_scheduled - timedelta(hours=time_offset_hours)
-    my_output_topic_name = "projects/{}/topics/{}".format(project_name, pubsub_topic_output)
-    my_matches = asyncio.run(get_summoner_matches(to_use_puuids, my_start_ts, my_end_ts, my_output_topic_name))
-    print(my_matches)
+    run_scheduled = cloud_event.data['message']['publish_time']
 
-    # print("Hello, " + base64.b64decode(cloud_event.data["message"]["data"]).decode() + "!")
-# [END functions_cloudevent_pubsub]
+    asyncio.run(process_run(run_scheduled, configs))
+
