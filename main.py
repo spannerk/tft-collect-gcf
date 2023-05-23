@@ -37,7 +37,7 @@ def read_event(cloud_event):
         'time_offset_hours': 1
     }
 
-    run_scheduled = cloud_event.data['message']['publish_time']
-
+    run_scheduled = datetime.strptime(cloud_event.data['message']['publish_time'][:19], "%Y-%m-%DT%H:%M:%S")
+    
     asyncio.run(process_run(run_scheduled, configs))
 
