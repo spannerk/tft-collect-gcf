@@ -32,12 +32,12 @@ def read_event(cloud_event):
         'summoner_output_location': 'tft-summoners',
         'match_output_func': gcs_write,
         'match_output_location': 'tft-player-matches',
-        'num_puuids':3,
+        'num_puuids':None,
         'time_window_hours': 12,
         'time_offset_hours': 1
     }
 
-    run_scheduled = datetime(2023, 4, 3, 0, 0, 0)
+    run_scheduled = cloud_event.data['message']['publish_time']
 
     asyncio.run(process_run(run_scheduled, configs))
 
