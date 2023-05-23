@@ -8,7 +8,7 @@ steps:
   - --region=us-central1
   - --gen2
   - --source=.
-  - --entry-point=subscribe
+  - --entry-point=read_event
   - --set-secrets=RIOT_API_KEY=RIOT_API_KEY:latest
   - --trigger-topic=twice-per-day
   - --runtime=python311
