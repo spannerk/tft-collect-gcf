@@ -4,6 +4,7 @@ from google.cloud import pubsub_v1
 from google.cloud import storage
 from datetime import timedelta, datetime
 import asyncio
+import json
 
 
 async def consume_summoner(summoner, start_ts, end_ts, summoner_output_func=print, match_output_func=None,
@@ -21,7 +22,7 @@ async def consume_summoner(summoner, start_ts, end_ts, summoner_output_func=prin
             summoner_output_func_args = []
         else:
             summoner_output_func_args = [summoner_output_location, "{}_{}_{}.json".format(summoner.puuid, str(start_ts), str(end_ts))]
-        summoner_output_func(str(summoner_data), *summoner_output_func_args)
+        summoner_output_func(json.dumps(summoner_data), *summoner_output_func_args)
 
     if match_output_func is not None:
         for match in history.matches:
@@ -79,7 +80,7 @@ def gcs_write(content, bucket_name, blob_name):
 async def consume_match(match, output_func, output_func_args=[]):
     await match.get()
     print("{} : {}".format(match.id, match.info.datetime))
-    return output_func(str(match.raw()), *output_func_args)
+    return output_func(json.dumps(match.raw()), *output_func_args)
 
 
 def get_time_range(run_scheduled, time_window_hours, time_offset_hours):

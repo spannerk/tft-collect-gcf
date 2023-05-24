@@ -60,14 +60,14 @@ class PyotTestCase(unittest.IsolatedAsyncioTestCase):
         async with Queue() as queue:
             test_starttime, test_endtime = datetime.datetime(2023, 4, 11, 11, 0), datetime.datetime(2023, 4, 11, 23, 0)
             await tasks.consume_summoner(self.summoner, test_starttime, test_endtime, print, None)
-            expected_history = """'match_history': ['EUW1_6356542216', 'EUW1_6356497497', 'EUW1_6356065287', 'EUW1_6356027087']"""
+            expected_history = """["EUW1_6356542216", "EUW1_6356497497", "EUW1_6356065287", "EUW1_6356027087"]"""
             self.assertIn(expected_history, mock_stdout.getvalue())
 
     @unittest.mock.patch('sys.stdout', new_callable=io.StringIO)
     async def test_consume_match(self, mock_stdout):
         async with Queue() as queue:
             await tasks.consume_match(self.match, print)
-            self.assertIn("'match_id': 'EUW1_6359993696'", mock_stdout.getvalue())
+            self.assertIn('EUW1_6359993696', mock_stdout.getvalue())
 
     @unittest.mock.patch('sys.stdout', new_callable=io.StringIO)
     async def test_get_summoner_matches(self, mock_stdout):
